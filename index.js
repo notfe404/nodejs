@@ -3,29 +3,34 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 const connectDB = require('./config/db');
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-//ket noi database
+const {createProduct} = require("./services/product.service");
+// Tao server side
 connectDB()
-.then(() => {
-    app.listen(port, () => {
-        console.log(`Listening on port: ${port}`);
-    })
-})
-.catch((error) => {
-    console.error(error.message);
-    process.exit(1);    
-});
+    .then(()=>{
+        app.listen(port, () => {
+            console.log(`Listening on port: ${port}`);
+        })
+    }).catch((err)=>{
+        console.log(err.message);
+        process.exit(1);
+    });
 
-//tao server side
 
-app.listen(port, () => {
-    console.log(`Listening on port: ${port}`);
-})
 
 app.get('/', (req, res) => {
-    res.send("<h1>Hello World!</h1>");
+    res.send("<h1>Hello World! ABC</h1>");
 })
-
 app.get('/about', (req, res) => {
-    res.send("<h1>About Us</h1>");
+    res.send("<h1>About Me!</h1>");
+})
+app.post('/product/create', async (req, res) => {
+    const product = await createProduct(req.body);
+    res.status(201).json({
+        success: true,
+        message: 'Product Created',
+        data: product
+    });
 })
